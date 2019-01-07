@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 namespace uwp
 {
@@ -129,6 +131,8 @@ namespace uwp
                     item = new MenuFlyoutSubItem(),
                 };
 
+
+                container.item.FontSize = 12;
                 this.Nodes[nodeID] = container;
                 return;
             }
@@ -143,6 +147,7 @@ namespace uwp
                     item = new MenuFlyoutItem(),
                 };
 
+                item.item.FontSize = 12;
                 this.Nodes[nodeID] = item;
                 return;
             }
@@ -259,7 +264,7 @@ namespace uwp
             if (child is MenuItem)
             {
                 var item = child as MenuItem;
-                    
+
                 if (item.separator != null)
                 {
                     this.item.Items.Add(item.separator);
@@ -288,6 +293,10 @@ namespace uwp
             {
                 case "label":
                     item.Text = value;
+                    return;
+
+                case "role":
+                    this.setRole(value);
                     return;
 
                 case "separator":
@@ -327,6 +336,287 @@ namespace uwp
 
                     this.separator = null;
                     return;
+            }
+        }
+
+        public void setRole(string role)
+        {
+            switch (role)
+            {
+                case "undo":
+                    this.item.Icon = new SymbolIcon(Symbol.Undo);
+                    break;
+
+                case "redo":
+                    this.item.Icon = new SymbolIcon(Symbol.Redo);
+                    break;
+
+                case "cut":
+                    this.item.Icon = new SymbolIcon(Symbol.Cut);
+                    this.setKeys("cmdorctrl+x");
+                    break;
+
+                case "copy":
+                    this.item.Icon = new SymbolIcon(Symbol.Copy);
+                    this.setKeys("cmdorctrl+c");
+                    break;
+
+
+                case "paste":
+                    this.item.Icon = new SymbolIcon(Symbol.Paste);
+                    this.setKeys("cmdorctrl+v");
+                    break;
+
+                case "pasteAndMatchStyle":
+                    this.item.Icon = new SymbolIcon(Symbol.Paste);
+                    break;
+
+                case "selectAll":
+                    this.item.Icon = new SymbolIcon(Symbol.SelectAll);
+                    this.setKeys("cmdorctrl+a");
+                    break;
+
+                case "delete":
+                    this.item.Icon = new SymbolIcon(Symbol.Delete);
+                    break;
+
+                case "minimize":
+                    this.item.Visibility = Visibility.Collapsed;
+                    break;
+
+                case "close":
+                    break;
+
+                case "quit":
+                    break;
+
+                case "reload":
+                    this.item.Icon = new SymbolIcon(Symbol.Refresh);
+                    break;
+
+                case "forceReload":
+                    this.item.Icon = new SymbolIcon(Symbol.Refresh);
+                    break;
+
+                case "toggleFullScreen":
+                    this.item.Icon = new SymbolIcon(Symbol.FullScreen);
+                    break;
+
+                default:
+                    this.item.Visibility = Visibility.Visible;
+                    break;
+            }
+        }
+
+        public void setKeys(string keys)
+        {
+            keys = keys.ToLower();
+
+
+            var acc = new KeyboardAccelerator();
+
+            foreach (var k in keys.Split('+'))
+            {
+                switch (k)
+                {
+                    case "ctrl":
+                    case "cmdorctrl":
+                        acc.Modifiers |= VirtualKeyModifiers.Control;
+                        break;
+
+                    case "shift":
+                        acc.Modifiers |= VirtualKeyModifiers.Shift;
+                        break;
+
+                    case "fn":
+                        acc.Modifiers |= VirtualKeyModifiers.Menu;
+                        break;
+
+                    case "meta":
+                        acc.Modifiers |= VirtualKeyModifiers.Windows;
+                        break;
+
+                    case "":
+                    default:
+                        var key = k;
+
+                        if (key.Length == 0)
+                        {
+                            key = "+";
+                        }
+
+                        acc.Key = this.ParseVirtualKey(key);
+                        break;
+                }
+            }
+
+            this.item.KeyboardAccelerators.Clear();
+            this.item.KeyboardAccelerators.Add(acc);
+        }
+
+
+        public VirtualKey ParseVirtualKey(string key)
+        {
+            switch (key)
+            {
+                case "a":
+                    return VirtualKey.A;
+
+                case "b":
+                    return VirtualKey.B;
+
+                case "c":
+                    return VirtualKey.C;
+
+                case "d":
+                    return VirtualKey.D;
+
+                case "e":
+                    return VirtualKey.E;
+
+                case "f":
+                    return VirtualKey.F;
+
+                case "g":
+                    return VirtualKey.G;
+
+                case "h":
+                    return VirtualKey.H;
+
+                case "i":
+                    return VirtualKey.I;
+
+                case "j":
+                    return VirtualKey.J;
+
+                case "k":
+                    return VirtualKey.K;
+
+                case "l":
+                    return VirtualKey.L;
+
+                case "m":
+                    return VirtualKey.M;
+
+                case "n":
+                    return VirtualKey.N;
+
+                case "o":
+                    return VirtualKey.O;
+
+                case "p":
+                    return VirtualKey.P;
+
+                case "q":
+                    return VirtualKey.Q;
+
+                case "r":
+                    return VirtualKey.R;
+
+                case "s":
+                    return VirtualKey.S;
+
+                case "t":
+                    return VirtualKey.T;
+
+                case "u":
+                    return VirtualKey.U;
+
+                case "v":
+                    return VirtualKey.V;
+
+                case "w":
+                    return VirtualKey.W;
+
+                case "x":
+                    return VirtualKey.X;
+
+                case "y":
+                    return VirtualKey.Y;
+
+                case "z":
+                    return VirtualKey.Z;
+
+                case "1":
+                    return VirtualKey.Number1;
+
+                case "2":
+                    return VirtualKey.Number2;
+
+                case "3":
+                    return VirtualKey.Number3;
+
+                case "4":
+                    return VirtualKey.Number4;
+
+                case "5":
+                    return VirtualKey.Number5;
+
+                case "6":
+                    return VirtualKey.Number6;
+
+                case "7":
+                    return VirtualKey.Number7;
+
+                case "8":
+                    return VirtualKey.Number8;
+
+                case "9":
+                    return VirtualKey.Number9;
+
+                case "0":
+                    return VirtualKey.Number0;
+
+                case "+":
+                    return VirtualKey.Add;
+
+                case "-":
+                    return VirtualKey.Subtract;
+
+                case "*":
+                    return VirtualKey.Multiply;
+
+                case "/":
+                    return VirtualKey.Divide;
+
+                case "f1":
+                    return VirtualKey.F1;
+
+                case "f2":
+                    return VirtualKey.F2;
+
+                case "f3":
+                    return VirtualKey.F3;
+
+                case "f4":
+                    return VirtualKey.F4;
+
+                case "f5":
+                    return VirtualKey.F5;
+
+                case "f6":
+                    return VirtualKey.F6;
+
+                case "f7":
+                    return VirtualKey.F7;
+
+                case "f8":
+                    return VirtualKey.F8;
+
+                case "f9":
+                    return VirtualKey.F9;
+
+                case "f10":
+                    return VirtualKey.F10;
+
+                case "f11":
+                    return VirtualKey.F11;
+
+                case "f12":
+                    return VirtualKey.F12;
+
+                default:
+                    return new VirtualKey();
             }
         }
     }

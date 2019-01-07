@@ -438,19 +438,21 @@ namespace uwp
             var flyout = new MenuFlyout();
 
             flyout.Closed += (s, e) =>
-           {
-               Bridge.DeleteElem(menu.ID);
+            {
+                Bridge.DeleteElem(menu.ID);
 
-               var input = new JsonObject();
-               input["ID"] = JsonValue.CreateStringValue(menu.ID);
+                var input = new JsonObject();
+                input["ID"] = JsonValue.CreateStringValue(menu.ID);
 
-               Bridge.GoCall("menus.OnClose", input);
-           };
+                Bridge.GoCall("menus.OnClose", input);
+            };
 
             foreach (var item in root.item.Items)
             {
                 flyout.Items.Add(item);
             }
+
+          
 
             FlyoutBase.SetAttachedFlyout(this.Webview, flyout);
             flyout.ShowAt(this.Webview, pos);
