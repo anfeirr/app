@@ -17,7 +17,7 @@ func TestPage(t *testing.T) {
 	assert.True(t, whenPageCalled)
 
 	whenNavCalled := false
-	p.WhenNavigator(func(n app.Navigator) {
+	p.WhenWebView(func(w app.WebView) {
 		whenNavCalled = true
 	})
 	assert.True(t, whenNavCalled)

@@ -2,7 +2,6 @@ package app
 
 // Window is the interface that describes a window.
 type Window interface {
-	Navigator
 	WebView
 	Closer
 

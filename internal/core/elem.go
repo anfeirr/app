@@ -27,8 +27,8 @@ func (e *Elem) WhenWindow(func(app.Window)) {}
 // WhenPage satisfies the app.Elem interface.
 func (e *Elem) WhenPage(func(app.Page)) {}
 
-// WhenNavigator satisfies the app.Elem interface.
-func (e *Elem) WhenNavigator(func(app.Navigator)) {}
+// WhenWebView satisfies the app.Elem interface.
+func (e *Elem) WhenWebView(func(app.WebView)) {}
 
 // WhenMenu satisfies the app.Elem interface.
 func (e *Elem) WhenMenu(func(app.Menu)) {}

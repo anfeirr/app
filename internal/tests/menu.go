@@ -25,7 +25,7 @@ func testMenu(t *testing.T, m app.Menu) {
 	assert.False(t, called)
 
 	called = false
-	m.WhenNavigator(func(n app.Navigator) {
+	m.WhenWebView(func(w app.WebView) {
 		called = true
 	})
 	assert.False(t, called)

@@ -14,8 +14,8 @@ type Elem interface {
 	// WhenPage calls the given func when the element is a page.
 	WhenPage(func(Page))
 
-	// WhenPage calls the given func when the element supports navigation.
-	WhenNavigator(func(Navigator))
+	// WebView calls the given func when the element displays web content.
+	WhenWebView(func(WebView))
 
 	// WhenStatusMenu calls the given func when the element is a menu.
 	WhenMenu(func(Menu))
@@ -53,9 +53,8 @@ type ElemWithCompo interface {
 	Render(Compo)
 }
 
-// Navigator is the interface that describes an element that supports
-// navigation.
-type Navigator interface {
+// WebView is the interface that describe an element that displays web content.
+type WebView interface {
 	ElemWithCompo
 
 	// Reload reloads the current page.
@@ -72,10 +71,7 @@ type Navigator interface {
 
 	// Next loads the next page.
 	Next()
-}
 
-// WebView is the interface that describe an element that displays web content.
-type WebView interface {
 	// Evaluates a javascript expression formatted with the given values. The
 	// result is stored into the given output.
 	//

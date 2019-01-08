@@ -16,8 +16,8 @@ func (p *Page) WhenPage(f func(app.Page)) {
 	f(p)
 }
 
-// WhenNavigator satisfies the app.Page interface.
-func (p *Page) WhenNavigator(f func(app.Navigator)) {
+// WhenWebView satisfies the app.Page interface.
+func (p *Page) WhenWebView(f func(app.WebView)) {
 	f(p)
 }
 

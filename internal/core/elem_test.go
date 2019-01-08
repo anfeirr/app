@@ -13,7 +13,7 @@ func TestElem(t *testing.T) {
 
 	e.WhenWindow(func(app.Window) {})
 	e.WhenPage(func(app.Page) {})
-	e.WhenNavigator(func(app.Navigator) {})
+	e.WhenWebView(func(app.WebView) {})
 	e.WhenMenu(func(app.Menu) {})
 	e.WhenDockTile(func(app.DockTile) {})
 	e.WhenStatusMenu(func(app.StatusMenu) {})

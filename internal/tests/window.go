@@ -22,7 +22,7 @@ func testWindow(t *testing.T, w app.Window) {
 	assert.False(t, called)
 
 	called = false
-	w.WhenNavigator(func(n app.Navigator) {
+	w.WhenWebView(func(w app.WebView) {
 		called = true
 	})
 	assert.True(t, called)
@@ -50,7 +50,7 @@ func testWindow(t *testing.T, w app.Window) {
 	})
 
 	t.Run("navigator", func(t *testing.T) {
-		testNavigator(t, w, false)
+		testWebView(t, w, false)
 	})
 
 	t.Run("compo", func(t *testing.T) {

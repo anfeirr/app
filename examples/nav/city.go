@@ -63,7 +63,7 @@ func (c *City) OnNavigate(u *url.URL) {
 		id = "paris"
 	}
 
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		c.CanPrevious = n.CanPrevious()
 		c.CanNext = n.CanNext()
 	})
@@ -95,7 +95,7 @@ func (c *City) Render() string {
 // OnPrevious is the function that is called when the button labelled "Previous"
 // is clicked.
 func (c *City) OnPrevious() {
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Previous()
 	})
 }
@@ -103,7 +103,7 @@ func (c *City) OnPrevious() {
 // OnNext is the function that is called when the button labelled "Next" is
 // clicked.
 func (c *City) OnNext() {
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Next()
 	})
 }

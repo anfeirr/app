@@ -120,7 +120,7 @@ func (c *Webview) OnNavigate(u *url.URL) {
 		c.Page = 1
 	}
 
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		c.CanPrevious = n.CanPrevious()
 		c.CanNext = n.CanNext()
 	})
@@ -141,14 +141,14 @@ func (c *Webview) OnNextPage() {
 	page := c.Page
 	page++
 
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Load("/test.Webview?page=%v", page)
 	})
 }
 
 // OnLink is the function to be called when the External link button is clicked.
 func (c *Webview) OnLink() {
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Load("http://www.github.com")
 	})
 }
@@ -275,21 +275,21 @@ func (c *Webview) OnNotificationWithReply() {
 // OnPrevious is the function that is called when the previous button is
 // clicked.
 func (c *Webview) OnPrevious() {
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Previous()
 	})
 }
 
 // OnReload is the function that is called when the reload button is clicked.
 func (c *Webview) OnReload() {
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Reload()
 	})
 }
 
 // OnNext is the function that is called when the next button is clicked.
 func (c *Webview) OnNext() {
-	app.ElemByCompo(c).WhenNavigator(func(n app.Navigator) {
+	app.ElemByCompo(c).WhenWebView(func(w app.WebView) {
 		n.Next()
 	})
 }

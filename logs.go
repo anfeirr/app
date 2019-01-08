@@ -228,7 +228,7 @@ func (w *windowWithLogs) WhenWindow(f func(Window)) {
 	f(w)
 }
 
-func (w *windowWithLogs) WhenNavigator(f func(Navigator)) {
+func (w *windowWithLogs) WhenWebView(f func(WebView)) {
 	f(w)
 }
 
@@ -426,7 +426,7 @@ func (p *pageWithLogs) WhenPage(f func(Page)) {
 	f(p)
 }
 
-func (p *pageWithLogs) WhenNavigator(f func(Navigator)) {
+func (p *pageWithLogs) WhenWebView(f func(WebView)) {
 	f(p)
 }
 

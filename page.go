@@ -6,7 +6,6 @@ import (
 
 // Page is the interface that describes a webpage.
 type Page interface {
-	Navigator
 	WebView
 	Closer
 

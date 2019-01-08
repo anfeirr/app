@@ -177,7 +177,7 @@ func testElemWithCompo(t *testing.T, e app.ElemWithCompo) {
 	assert.Error(t, e.Err())
 }
 
-func testNavigator(t *testing.T, n app.Navigator, lazy bool) {
+func testWebView(t *testing.T, n app.WebView, lazy bool) {
 	n.Reload()
 	assert.Error(t, n.Err())
 

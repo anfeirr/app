@@ -461,8 +461,8 @@ func (w *Window) WhenWindow(f func(app.Window)) {
 	f(w)
 }
 
-// WhenNavigator satisfies the app.Window interface.
-func (w *Window) WhenNavigator(f func(app.Navigator)) {
+// WhenWebView satisfies the app.Window interface.
+func (w *Window) WhenWebView(f func(app.WebView)) {
 	f(w)
 }
 
