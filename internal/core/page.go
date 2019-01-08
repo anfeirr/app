@@ -76,6 +76,11 @@ func (p *Page) Referer() *url.URL {
 	return nil
 }
 
+// EvalJS satisfies the app.Page interface.
+func (p *Page) EvalJS(out interface{}, eval string, args ...interface{}) error {
+	return app.ErrNotSupported
+}
+
 // Close satisfies the app.Page interface.
 func (p *Page) Close() {
 	p.SetErr(app.ErrNotSupported)

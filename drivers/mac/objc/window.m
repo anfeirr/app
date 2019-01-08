@@ -272,7 +272,6 @@
 
     NSString *js = [NSString stringWithFormat:@"render(%@)", in[@"Changes"]];
     [win.webview evaluateJavaScript:js completionHandler:nil];
-
     [driver.macRPC return:returnID withOutput:nil andError:nil];
   });
 }

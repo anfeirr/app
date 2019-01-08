@@ -74,6 +74,15 @@ type Navigator interface {
 	Next()
 }
 
+// WebView is the interface that describe an element that displays web content.
+type WebView interface {
+	// Evaluates a javascript expression formatted with the given values. The
+	// result is stored into the given output.
+	//
+	// It returns an error when a given argument can't be converted to json.
+	EvalJS(out interface{}, eval string, args ...interface{}) error
+}
+
 // Closer is the interface that describes an element that can be closed.
 type Closer interface {
 	// Close closes the element and free its allocated resources.

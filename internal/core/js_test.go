@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestJsFormat(t *testing.T) {
+func TestFormatJS(t *testing.T) {
 	tests := []struct {
 		scenario string
 		format   string
@@ -84,7 +84,7 @@ func TestJsFormat(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.scenario, func(t *testing.T) {
-			result, err := JsFormat(test.format, test.args...)
+			result, err := FormatJS(test.format, test.args...)
 			if test.err {
 				require.Error(t, err)
 				return

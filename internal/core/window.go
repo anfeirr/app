@@ -39,6 +39,11 @@ func (w *Window) Render(c app.Compo) {
 	w.SetErr(app.ErrNotSupported)
 }
 
+// EvalJS satisfies the app.Window interface.
+func (w *Window) EvalJS(out interface{}, eval string, args ...interface{}) error {
+	return app.ErrNotSupported
+}
+
 // Reload satisfies the app.Window interface.
 func (w *Window) Reload() {
 	w.SetErr(app.ErrNotSupported)

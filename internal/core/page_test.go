@@ -47,6 +47,8 @@ func TestPage(t *testing.T) {
 	assert.Zero(t, p.URL())
 	assert.Zero(t, p.Referer())
 
+	assert.Error(t, p.EvalJS(nil, ""))
+
 	p.Close()
 	assert.Error(t, p.Err())
 }

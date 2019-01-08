@@ -85,6 +85,8 @@ func TestWindow(t *testing.T) {
 
 	assert.False(t, w.IsMinimized())
 
+	assert.Error(t, w.EvalJS(nil, ""))
+
 	w.Close()
 	assert.Error(t, w.Err())
 }

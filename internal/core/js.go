@@ -8,8 +8,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// JsFormat formats a javascript expression according to a format specifier.
-func JsFormat(format string, a ...interface{}) (string, error) {
+// FormatJS formats a javascript expression according to a format specifier.
+func FormatJS(format string, a ...interface{}) (string, error) {
 	for i, v := range a {
 		switch reflect.ValueOf(v).Kind() {
 		case reflect.Struct,
