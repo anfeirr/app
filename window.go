@@ -48,50 +48,50 @@ type Window interface {
 
 // WindowConfig is a struct that describes a window.
 type WindowConfig struct {
+	// The URL of the component to load when the window is created.
+	URL string `json:",omitempty"`
+
 	// The title.
-	Title string
+	Title string `json:",omitempty"`
 
 	// The default position on x axis.
-	X float64
+	X float64 `json:",omitempty"`
 
 	// The default position on y axis.
-	Y float64
+	Y float64 `json:",omitempty"`
 
 	// The default width.
-	Width float64
+	Width float64 `json:",omitempty"`
 
 	// The minimum width.
-	MinWidth float64
+	MinWidth float64 `json:",omitempty"`
 
 	// The maximum width.
-	MaxWidth float64
+	MaxWidth float64 `json:",omitempty"`
 
 	// The default height.
-	Height float64
+	Height float64 `json:",omitempty"`
 
 	// The minimum height.
-	MinHeight float64
+	MinHeight float64 `json:",omitempty"`
 
 	// The maximum height.
-	MaxHeight float64
+	MaxHeight float64 `json:",omitempty"`
 
 	// The background color (#rrggbb).
-	BackgroundColor string
+	BackgroundColor string `json:",omitempty"`
 
 	// Enables frosted effect.
-	FrostedBackground bool
+	FrostedBackground bool `json:",omitempty"`
 
 	// Reports whether the window is resizable.
-	FixedSize bool
+	FixedSize bool `json:",omitempty"`
 
 	// Reports whether the close button is hidden.
-	CloseHidden bool
+	CloseHidden bool `json:",omitempty"`
 
 	// Reports whether the minimize button is hidden.
-	MinimizeHidden bool
-
-	// The URL of the component to load when the window is created.
-	URL string
+	MinimizeHidden bool `json:",omitempty"`
 }
 
 // Constants that enumerates window events.
