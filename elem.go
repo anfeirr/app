@@ -72,11 +72,12 @@ type WebView interface {
 	// Next loads the next page.
 	Next()
 
-	// Evaluates a javascript expression formatted with the given values. The
-	// result is stored into the given output.
+	// Evaluates a javascript expression formatted with the given values and
+	// stores the result is the given value.
 	//
-	// It returns an error when a given argument can't be converted to json.
-	EvalJS(out interface{}, eval string, args ...interface{}) error
+	// It returns an error when result is not a pointer or when a given argument
+	// can't be converted to json.
+	EvalJS(result interface{}, eval string, args ...interface{}) error
 }
 
 // Closer is the interface that describes an element that can be closed.

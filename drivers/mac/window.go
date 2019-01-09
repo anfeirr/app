@@ -280,6 +280,30 @@ func (w *Window) Next() {
 	w.Load(u)
 }
 
+// EvalJS satisfies the app.Window interface.
+func (w *Window) EvalJS(result interface{}, eval string, args ...interface{}) error {
+	ev, err := core.FormatJS(eval, args...)
+	if err != nil {
+		return err
+	}
+
+	out := struct {
+		Result interface{}
+	}{
+		Result: result,
+	}
+
+	err = driver.platform.Call("windows.EvalJS", &out, struct {
+		ID   string
+		Eval string
+	}{
+		ID:   w.id,
+		Eval: ev,
+	})
+
+	return err
+}
+
 // Position satisfies the app.Window interface.
 func (w *Window) Position() (x, y float64) {
 	out := struct {

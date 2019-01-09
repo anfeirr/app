@@ -276,6 +276,40 @@
   });
 }
 
++ (void)evalJS:(NSDictionary *)in return:(NSString *)returnID {
+  defer(returnID, ^{
+    Driver *driver = [Driver current];
+    NSString *ID = in[@"ID"];
+    NSString *eval = in[@"Eval"];
+
+    Window *win = driver.elements[ID];
+    if (win == nil) {
+      [NSException raise:@"ErrNoWindow" format:@"no window with id %@", ID];
+    }
+
+    [win.webview
+        evaluateJavaScript:eval
+         completionHandler:^(id result, NSError *error) {
+           if (error != nil) {
+             [driver.macRPC return:returnID withOutput:nil
+                 andError:error.localizedDescription];
+             return;
+           }
+
+           if (result == nil) {
+             [driver.macRPC return:returnID withOutput:nil andError:nil];
+             return;
+           }
+
+           NSDictionary *out = @{
+             @"Result" : result,
+           };
+
+           [driver.macRPC return:returnID withOutput:out andError:nil];
+         }];
+  });
+}
+
 + (void)position:(NSDictionary *)in return:(NSString *)returnID {
   defer(returnID, ^{
     Driver *driver = [Driver current];

@@ -19,6 +19,7 @@
 - (void)configTitlebar:(NSString *)title hidden:(BOOL)isHidden;
 + (void)load:(NSDictionary *)in return:(NSString *)returnID;
 + (void)render:(NSDictionary *)in return:(NSString *)returnID;
++ (void)evalJS:(NSDictionary *)in return:(NSString *)returnID;
 + (void)position:(NSDictionary *)in return:(NSString *)returnID;
 + (void)move:(NSDictionary *)in return:(NSString *)returnID;
 + (void)center:(NSDictionary *)in return:(NSString *)returnID;

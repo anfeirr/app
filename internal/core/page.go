@@ -66,6 +66,11 @@ func (p *Page) Next() {
 	p.SetErr(app.ErrNotSupported)
 }
 
+// EvalJS satisfies the app.Page interface.
+func (p *Page) EvalJS(out interface{}, eval string, args ...interface{}) error {
+	return app.ErrNotSupported
+}
+
 // URL satisfies the app.Page interface.
 func (p *Page) URL() *url.URL {
 	return nil
@@ -74,11 +79,6 @@ func (p *Page) URL() *url.URL {
 // Referer satisfies the app.Page interface.
 func (p *Page) Referer() *url.URL {
 	return nil
-}
-
-// EvalJS satisfies the app.Page interface.
-func (p *Page) EvalJS(out interface{}, eval string, args ...interface{}) error {
-	return app.ErrNotSupported
 }
 
 // Close satisfies the app.Page interface.
