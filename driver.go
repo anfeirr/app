@@ -5,6 +5,18 @@ type Driver interface {
 	// The operating system the driver is for.
 	Target() string
 
+	// The component factory used to create components.
+	Compos() *Factory
+
+	// The store that contains the app elements.
+	Elems() ElemStore
+
+	// Call calls the platform method with the given input and stores the result
+	// into the given ouput. Result is ignored if the output is nil.
+	//
+	// It panics if the given output is not a pointer.
+	Call(method string, out interface{}, in interface{}) error
+
 	// Run runs the application with the components registered in the given
 	// factory.
 	Run(DriverConfig) error

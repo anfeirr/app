@@ -26,9 +26,6 @@ type Elem interface {
 	// WhenStatusMenu calls the given func when the element is a status menu.
 	WhenStatusMenu(func(StatusMenu))
 
-	// WhenErr call the given func when the element is in an error state.
-	WhenErr(func(err error))
-
 	// Err returns the error that prevent the element to work.
 	Err() error
 }
@@ -51,6 +48,21 @@ type ElemWithCompo interface {
 
 	// Render renders the component.
 	Render(Compo)
+}
+
+// ElemStore is the interface that describes a store that contains app elements.
+type ElemStore interface {
+	// Put inserts or update the given element.
+	Put(Elem)
+
+	// Delete deletes the given element.
+	Delete(Elem)
+
+	// GetByID returns the element registered under the the given id.
+	GetByID(string) Elem
+
+	// GetByCompo returns the element where the given component is mounted.
+	GetByCompo(Compo) Elem
 }
 
 // WebView is the interface that describe an element that displays web content.
