@@ -43,14 +43,15 @@ func init() {
 	app.EnableDebug(debug)
 }
 
+// Call satisfies the app.Driver interface.
+func (d *Driver) Call(method string, out interface{}, in interface{}) error {
+	return d.platform.Call(method, out, in)
+}
+
 // Run satisfies the app.Driver interface.
 func (d *Driver) Run(c app.DriverConfig) error {
 	if len(goappBuild) != 0 {
 		return d.runGoappBuild()
-	}
-
-	if driver != nil {
-		return errors.New("running already")
 	}
 
 	d.ui = c.UI
@@ -83,20 +84,20 @@ func (d *Driver) Run(c app.DriverConfig) error {
 	d.golang.Handle("windows.OnNavigate", handleWindow(onWindowNavigate))
 	d.golang.Handle("windows.OnAlert", handleWindow(onWindowAlert))
 
-	d.golang.Handle("menus.OnClose", handleMenu(onMenuClose))
-	d.golang.Handle("menus.OnCallback", handleMenu(onMenuCallback))
+	// d.golang.Handle("menus.OnClose", handleMenu(onMenuClose))
+	// d.golang.Handle("menus.OnCallback", handleMenu(onMenuCallback))
 
-	d.golang.Handle("controller.OnDirectionChange", handleController(onControllerDirectionChange))
-	d.golang.Handle("controller.OnButtonPressed", handleController(onControllerButtonPressed))
-	d.golang.Handle("controller.OnConnected", handleController(onControllerConnected))
-	d.golang.Handle("controller.OnDisconnected", handleController(onControllerDisconnected))
-	d.golang.Handle("controller.OnPause", handleController(onControllerPause))
-	d.golang.Handle("controller.OnClose", handleController(onControllerClose))
+	// d.golang.Handle("controller.OnDirectionChange", handleController(onControllerDirectionChange))
+	// d.golang.Handle("controller.OnButtonPressed", handleController(onControllerButtonPressed))
+	// d.golang.Handle("controller.OnConnected", handleController(onControllerConnected))
+	// d.golang.Handle("controller.OnDisconnected", handleController(onControllerDisconnected))
+	// d.golang.Handle("controller.OnPause", handleController(onControllerPause))
+	// d.golang.Handle("controller.OnClose", handleController(onControllerClose))
 
-	d.golang.Handle("filePanels.OnSelect", handleFilePanel(onFilePanelSelect))
-	d.golang.Handle("saveFilePanels.OnSelect", handleSaveFilePanel(onSaveFilePanelSelect))
+	// d.golang.Handle("filePanels.OnSelect", handleFilePanel(onFilePanelSelect))
+	// d.golang.Handle("saveFilePanels.OnSelect", handleSaveFilePanel(onSaveFilePanelSelect))
 
-	d.golang.Handle("notifications.OnReply", handleNotification(onNotificationReply))
+	// d.golang.Handle("notifications.OnReply", handleNotification(onNotificationReply))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	d.stop = cancel

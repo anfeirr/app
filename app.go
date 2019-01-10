@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
 
 	"github.com/pkg/errors"
 )
@@ -27,8 +28,9 @@ var (
 	// It is used by Log, Logf, Panic and Panicf to generate logs.
 	Logger func(format string, a ...interface{})
 
-	driver    Driver
 	target    = "web"
+	driver    Driver
+	runOnce   sync.Once
 	ui        = make(chan func(), 4096)
 	factory   = NewFactory()
 	events    = NewEventRegistry(ui)
@@ -81,23 +83,26 @@ func Import(c ...Compo) {
 
 // Run runs the app with the given driver as backend.
 func Run(drivers ...Driver) {
-	for _, d := range drivers {
+	var d Driver
+
+	for _, d = range drivers {
 		if d.Target() == target {
-			driver = d
 			break
 		}
 	}
 
-	if driver == nil {
+	if d == nil {
 		panic(errors.Errorf("no driver set for %s", target))
 	}
 
-	driver = DriverWithLogs(driver)
+	runOnce.Do(func() {
+		driver = DriverWithLogs(d)
 
-	driver.Run(DriverConfig{
-		UI:      ui,
-		Factory: factory,
-		Events:  events,
+		driver.Run(DriverConfig{
+			UI:      ui,
+			Factory: factory,
+			Events:  events,
+		})
 	})
 }
 
