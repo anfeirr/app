@@ -9,8 +9,6 @@ import (
 
 // Driver is the app.Driver implementation for MacOS.
 type Driver struct {
-	core.Driver `json:"-"`
-
 	// The URL of the component to load in the default window. A non empty value
 	// triggers the creation of the default window when the app in openened. It
 	// overrides the DefaultWindow.URL value.

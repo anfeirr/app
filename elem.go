@@ -1,5 +1,11 @@
 package app
 
+// ElemConfig is the interface that describes an element config.
+type ElemConfig interface {
+	// Returns a  string representation of the element configuration.
+	Dump() string
+}
+
 // Elem is the interface that describes an app element.
 type Elem interface {
 	// ID returns the element identifier.
@@ -10,12 +16,6 @@ type Elem interface {
 
 	// WhenWindow calls the given func when the element is a window.
 	WhenWindow(func(Window))
-
-	// WhenPage calls the given func when the element is a page.
-	WhenPage(func(Page))
-
-	// WebView calls the given func when the element displays web content.
-	WhenWebView(func(WebView))
 
 	// WhenStatusMenu calls the given func when the element is a menu.
 	WhenMenu(func(Menu))
@@ -30,9 +30,8 @@ type Elem interface {
 	Err() error
 }
 
-// ElemWithCompo is the interface that describes an element that hosts
-// components.
-type ElemWithCompo interface {
+// View is the interface that describes an element that displays components.
+type View interface {
 	Elem
 
 	// Load loads the page specified by the URL.
@@ -42,32 +41,6 @@ type ElemWithCompo interface {
 	// e.g. hello will load the component named hello.
 	// It returns an error if the component is not imported.
 	Load(url string, v ...interface{})
-
-	// Compo returns the loaded component.
-	Compo() Compo
-
-	// Render renders the component.
-	Render(Compo)
-}
-
-// ElemStore is the interface that describes a store that contains app elements.
-type ElemStore interface {
-	// Put inserts or update the given element.
-	Put(Elem)
-
-	// Delete deletes the given element.
-	Delete(Elem)
-
-	// GetByID returns the element registered under the the given id.
-	GetByID(string) Elem
-
-	// GetByCompo returns the element where the given component is mounted.
-	GetByCompo(Compo) Elem
-}
-
-// WebView is the interface that describe an element that displays web content.
-type WebView interface {
-	ElemWithCompo
 
 	// Reload reloads the current page.
 	Reload()
@@ -84,12 +57,11 @@ type WebView interface {
 	// Next loads the next page.
 	Next()
 
-	// Evaluates a javascript expression formatted with the given values and
-	// stores the result is the given value.
-	//
-	// It returns an error when result is not a pointer or when a given argument
-	// can't be converted to json.
-	EvalJS(result interface{}, eval string, args ...interface{}) error
+	// Render renders the component.
+	Render(Compo)
+
+	// Compo returns the loaded component.
+	Compo() Compo
 }
 
 // Closer is the interface that describes an element that can be closed.

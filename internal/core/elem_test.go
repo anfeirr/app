@@ -12,19 +12,11 @@ func TestElem(t *testing.T) {
 	e := &Elem{}
 
 	e.WhenWindow(func(app.Window) {})
-	e.WhenPage(func(app.Page) {})
-	e.WhenWebView(func(app.WebView) {})
 	e.WhenMenu(func(app.Menu) {})
 	e.WhenDockTile(func(app.DockTile) {})
 	e.WhenStatusMenu(func(app.StatusMenu) {})
-	e.WhenErr(func(err error) {
-		t.Error("WhenErr called:", err)
-	})
 
 	e.SetErr(app.ErrElemNotSet)
-	e.WhenErr(func(err error) {
-		t.Log("WhenErr called:", err)
-	})
 
 	assert.Equal(t, "", e.ID())
 	assert.False(t, e.Contains(nil))

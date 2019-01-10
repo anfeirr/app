@@ -5,14 +5,9 @@ import (
 	"fmt"
 )
 
-// Logs returns an addons that logs all the driver operations.
-// It uses the loggers defined in app.Loggers.
-func Logs() func(Driver) Driver {
-	return func(d Driver) Driver {
-		return &driverWithLogs{
-			Driver: d,
-		}
-	}
+// DriverWithLogs decorates a driver with logs.
+func DriverWithLogs(d Driver) Driver {
+	return &driverWithLogs{Driver: d}
 }
 
 // Driver logs.
@@ -20,155 +15,54 @@ type driverWithLogs struct {
 	Driver
 }
 
-func (d *driverWithLogs) Run(c DriverConfig) error {
+func (d *driverWithLogs) Run(c DriverConfig) {
 	Logf("running %T driver", d.Driver)
-
-	err := d.Driver.Run(c)
-	if err != nil {
-		Logf("driver stopped running: %s", err)
-	}
-	return err
+	d.Driver.Run(c)
 }
 
 func (d *driverWithLogs) Render(c Compo) {
 	e := d.ElemByCompo(c)
 
-	if withCompo, ok := e.(ElemWithCompo); ok {
-		withCompo.(ElemWithCompo).Render(c)
+	if view, ok := e.(View); ok {
+		view.Render(c)
 	}
+}
+
+func (d *driverWithLogs) New(c ElemConfig) Elem {
+	WhenDebug(func() {
+		Logf("creating element from %T: %s", c, c.Dump())
+	})
+
+	e := d.Driver.New(c)
+	if e.Err() != nil {
+		Logf("creating element failed: %s", e.Err())
+	}
+
+	return d.elemLogger(e)
 }
 
 func (d *driverWithLogs) ElemByCompo(c Compo) Elem {
-	switch e := d.Driver.ElemByCompo(c).(type) {
-	case Window:
-		return &windowWithLogs{Window: e}
+	e := d.Driver.ElemByCompo(c)
+	return d.elemLogger(e)
+}
 
-	case Page:
-		return &pageWithLogs{Page: e}
+func (d *driverWithLogs) elemLogger(e Elem) Elem {
+	switch v := e.(type) {
+	case Window:
+		return &windowWithLogs{Window: v}
 
 	case DockTile:
-		return &dockWithLogs{DockTile: e}
+		return &dockWithLogs{DockTile: v}
 
 	case StatusMenu:
-		return &statusMenuWithLogs{StatusMenu: e}
+		return &statusMenuWithLogs{StatusMenu: v}
 
 	case Menu:
-		return &menuWithLogs{Menu: e}
+		return &menuWithLogs{Menu: v}
 
 	default:
-		return e
+		return v
 	}
-}
-
-func (d *driverWithLogs) NewWindow(c WindowConfig) Window {
-	WhenDebug(func() {
-		config, _ := json.MarshalIndent(c, "", "    ")
-		Logf("creating window: %s", config)
-	})
-
-	w := d.Driver.NewWindow(c)
-	if w.Err() != nil {
-		Logf("creating window failed: %s", w.Err())
-	}
-
-	return &windowWithLogs{Window: w}
-}
-
-func (d *driverWithLogs) NewPage(c PageConfig) Page {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating page: %s", config)
-	})
-
-	p := d.Driver.NewPage(c)
-	if p.Err() != nil {
-		Logf("creating page failed: %s", p.Err())
-	}
-
-	return &pageWithLogs{Page: p}
-}
-
-func (d *driverWithLogs) NewContextMenu(c MenuConfig) Menu {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating context menu: %s", config)
-	})
-
-	m := d.Driver.NewContextMenu(c)
-	if m.Err() != nil {
-		Logf("creating context menu failed: %s", m.Err())
-	}
-
-	return &menuWithLogs{Menu: m}
-}
-
-func (d *driverWithLogs) NewController(c ControllerConfig) Controller {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating controller: %s", config)
-	})
-
-	controller := d.Driver.NewController(c)
-	if controller.Err() != nil {
-		Logf("creating controller failed: %s", controller.Err())
-	}
-
-	return &controllerWithLogs{Controller: controller}
-}
-
-func (d *driverWithLogs) NewFilePanel(c FilePanelConfig) Elem {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating file panel: %s", config)
-	})
-
-	p := d.Driver.NewFilePanel(c)
-	if p.Err() != nil {
-		Logf("creating file panel failed: %s", p.Err())
-	}
-
-	return p
-}
-
-func (d *driverWithLogs) NewSaveFilePanel(c SaveFilePanelConfig) Elem {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating save file panel: %s", config)
-	})
-
-	p := d.Driver.NewSaveFilePanel(c)
-	if p.Err() != nil {
-		Logf("creating save file panel failed: %s", p.Err())
-	}
-
-	return p
-}
-
-func (d *driverWithLogs) NewShare(v interface{}) Elem {
-	WhenDebug(func() {
-		Logf("creating share: %v", v)
-	})
-
-	s := d.Driver.NewShare(v)
-	if s.Err() != nil {
-		Logf("creating share failed: %s", s.Err())
-	}
-
-	return s
-}
-
-func (d *driverWithLogs) NewNotification(c NotificationConfig) Elem {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating notification: %s", config)
-	})
-
-	n := d.Driver.NewNotification(c)
-	if n.Err() != nil {
-		Logf("creating notification failed: %s", n.Err())
-	}
-
-	return n
 }
 
 func (d *driverWithLogs) MenuBar() Menu {
@@ -184,20 +78,6 @@ func (d *driverWithLogs) MenuBar() Menu {
 	return &menuWithLogs{Menu: m}
 }
 
-func (d *driverWithLogs) NewStatusMenu(c StatusMenuConfig) StatusMenu {
-	WhenDebug(func() {
-		config := prettyConf(c)
-		Logf("creating status menu: %s", config)
-	})
-
-	m := d.Driver.NewStatusMenu(c)
-	if m.Err() != nil {
-		Logf("getting status menu failed: %s", m.Err())
-	}
-
-	return &statusMenuWithLogs{StatusMenu: m}
-}
-
 func (d *driverWithLogs) DockTile() DockTile {
 	WhenDebug(func() {
 		Logf("getting dock tile")
@@ -211,12 +91,12 @@ func (d *driverWithLogs) DockTile() DockTile {
 	return &dockWithLogs{DockTile: dt}
 }
 
-func (d *driverWithLogs) Stop() {
+func (d *driverWithLogs) Close() {
 	WhenDebug(func() {
-		Logf("stopping driver")
+		Logf("closing driver")
 	})
 
-	d.Driver.Stop()
+	d.Driver.Close()
 }
 
 // Window logs.
@@ -225,10 +105,6 @@ type windowWithLogs struct {
 }
 
 func (w *windowWithLogs) WhenWindow(f func(Window)) {
-	f(w)
-}
-
-func (w *windowWithLogs) WhenWebView(f func(WebView)) {
 	f(w)
 }
 
@@ -247,24 +123,6 @@ func (w *windowWithLogs) Load(url string, v ...interface{}) {
 		Logf("window %s failed to load %s: %s",
 			w.ID(),
 			parsedURL,
-			w.Err(),
-		)
-	}
-}
-
-func (w *windowWithLogs) Render(c Compo) {
-	WhenDebug(func() {
-		Logf("window %s is rendering %T",
-			w.ID(),
-			c,
-		)
-	})
-
-	w.Window.Render(c)
-	if w.Err() != nil {
-		Logf("window %s failed to render %T: %s",
-			w.ID(),
-			c,
 			w.Err(),
 		)
 	}
@@ -307,6 +165,24 @@ func (w *windowWithLogs) Next() {
 	if w.Err() != nil {
 		Logf("window %s failed to load next: %s",
 			w.ID(),
+			w.Err(),
+		)
+	}
+}
+
+func (w *windowWithLogs) Render(c Compo) {
+	WhenDebug(func() {
+		Logf("window %s is rendering %T",
+			w.ID(),
+			c,
+		)
+	})
+
+	w.Window.Render(c)
+	if w.Err() != nil {
+		Logf("window %s failed to render %T: %s",
+			w.ID(),
+			c,
 			w.Err(),
 		)
 	}
@@ -415,87 +291,6 @@ func (c *controllerWithLogs) Close() {
 			c.Err(),
 		)
 	}
-}
-
-// Page logs.
-type pageWithLogs struct {
-	Page
-}
-
-func (p *pageWithLogs) WhenPage(f func(Page)) {
-	f(p)
-}
-
-func (p *pageWithLogs) WhenWebView(f func(WebView)) {
-	f(p)
-}
-
-func (p *pageWithLogs) Load(url string, v ...interface{}) {
-	parsedURL := fmt.Sprintf(url, v...)
-
-	WhenDebug(func() {
-		Logf("page %s is loading %s",
-			p.ID(),
-			parsedURL,
-		)
-	})
-
-	p.Page.Load(url, v...)
-	if p.Err() != nil {
-		Logf("page %s failed to load %s: %s",
-			p.ID(),
-			parsedURL,
-			p.Err(),
-		)
-	}
-}
-
-func (p *pageWithLogs) Render(c Compo) {
-	WhenDebug(func() {
-		Logf("page %s is rendering %T",
-			p.ID(),
-			c,
-		)
-	})
-
-	p.Page.Render(c)
-	if p.Err() != nil {
-		Logf("page %s failed to render %T: %s",
-			p.ID(),
-			c,
-			p.Err(),
-		)
-	}
-}
-
-func (p *pageWithLogs) Reload() {
-	WhenDebug(func() {
-		Logf("page %s is reloading", p.ID())
-	})
-
-	p.Page.Reload()
-	if p.Err() != nil {
-		Logf("page %s failed to reload: %s",
-			p.ID(),
-			p.Err(),
-		)
-	}
-}
-
-func (p *pageWithLogs) Previous() {
-	WhenDebug(func() {
-		Logf("page %s is loading previous", p.ID())
-	})
-
-	p.Page.Previous()
-}
-
-func (p *pageWithLogs) Next() {
-	WhenDebug(func() {
-		Logf("page %s is loading next", p.ID())
-	})
-
-	p.Page.Next()
 }
 
 // Menu logs.

@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/murlokswarm/app"
-	"github.com/murlokswarm/app/drivers/test"
 	"github.com/murlokswarm/app/internal/tests"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,6 +18,12 @@ func TestImport(t *testing.T) {
 	app.Import(tests.NoPointerCompo{})
 }
 
+func TestRunPanic(t *testing.T) {
+	assert.Panics(t, func() {
+		app.Run()
+	})
+}
+
 func TestApp(t *testing.T) {
 	app.Logger = func(format string, a ...interface{}) {
 		log := fmt.Sprintf(format, a...)
@@ -29,8 +33,6 @@ func TestApp(t *testing.T) {
 	app.Import(&tests.Foo{})
 	app.Import(&tests.Bar{})
 
-	app.Addons(app.Logs())
-
 	onRun := func() {
 		d := app.CurrentDriver()
 		require.NotNil(t, d)
@@ -39,39 +41,26 @@ func TestApp(t *testing.T) {
 		assert.Equal(t, filepath.Join("resources", "hello", "world"), app.Resources("hello", "world"))
 		assert.Equal(t, filepath.Join("storage", "hello", "world"), app.Storage("hello", "world"))
 
-		app.Render(&tests.Hello{})
+		assert.NotNil(t, app.New(tests.UnsupportedConfig{}))
+		assert.NotNil(t, app.New(app.WindowConfig{}))
 		assert.NotNil(t, app.ElemByCompo(&tests.Hello{}))
-
-		assert.NotNil(t, app.NewWindow(app.WindowConfig{}))
-		assert.NotNil(t, app.NewPage(app.PageConfig{}))
-		assert.NotNil(t, app.NewContextMenu(""))
-		assert.NotNil(t, app.NewController(app.ControllerConfig{}))
-		assert.NotNil(t, app.NewFilePanel(app.FilePanelConfig{}))
-		assert.NotNil(t, app.NewSaveFilePanel(app.SaveFilePanelConfig{}))
-		assert.NotNil(t, app.NewShare("boo"))
-		assert.NotNil(t, app.NewNotification(app.NotificationConfig{}))
-		assert.NotNil(t, app.MenuBar())
-		assert.NotNil(t, app.NewStatusMenu(app.StatusMenuConfig{}))
-		assert.NotNil(t, app.Dock())
-		assert.NotNil(t, app.NewStatusMenu(app.StatusMenuConfig{}))
+		app.Render(&tests.Hello{})
 
 		app.Emit("test")
 
 		app.UI(func() {
 			app.Logf("hello")
+			app.Close()
 		})
-
-		go time.AfterFunc(time.Millisecond, app.Stop)
 	}
 
 	defer app.NewSubscriber().
 		Subscribe(app.Running, onRun).
 		Close()
 
-	err := app.Run()
-	assert.Error(t, err)
-	err = app.Run(&test.Driver{})
-	assert.Error(t, err)
+	app.Run(&tests.Driver{
+		SimulatedTarget: "web",
+	})
 }
 
 func TestLog(t *testing.T) {

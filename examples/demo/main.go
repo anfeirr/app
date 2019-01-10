@@ -3,8 +3,6 @@ package main
 import (
 	"github.com/murlokswarm/app"
 	"github.com/murlokswarm/app/drivers/mac"
-	"github.com/murlokswarm/app/drivers/web"
-	"github.com/murlokswarm/app/drivers/win"
 )
 
 func main() {
@@ -39,22 +37,22 @@ func main() {
 				},
 			},
 		},
-		&win.Driver{
-			URL:       defaultURL,
-			URLScheme: "goapp-demo",
-			SupportedFiles: []win.FileType{
-				{
-					Name: "murlok",
-					Help: "A test extension for goapp",
-					Icon: "like.png",
-					Extensions: []win.FileExtension{
-						{Ext: ".murlok"},
-					},
-				},
-			},
-		},
-		&web.Driver{
-			URL: defaultURL,
-		},
+		// &win.Driver{
+		// 	URL:       defaultURL,
+		// 	URLScheme: "goapp-demo",
+		// 	SupportedFiles: []win.FileType{
+		// 		{
+		// 			Name: "murlok",
+		// 			Help: "A test extension for goapp",
+		// 			Icon: "like.png",
+		// 			Extensions: []win.FileExtension{
+		// 				{Ext: ".murlok"},
+		// 			},
+		// 		},
+		// 	},
+		// },
+		// &web.Driver{
+		// 	URL: defaultURL,
+		// },
 	)
 }

@@ -11,8 +11,6 @@ import (
 
 // Driver is an app.Driver implementation for web.
 type Driver struct {
-	core.Driver
-
 	// The URL of the component to load when a navigating on the website root.
 	URL string
 

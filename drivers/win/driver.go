@@ -7,8 +7,6 @@ import (
 
 // Driver is the app.Driver implementation for Windows.
 type Driver struct {
-	core.Driver `json:"-"`
-
 	// The URL of the component to load in the default window. It overrides the
 	// DefaultWindow.URL value.
 	URL string `json:"-"`

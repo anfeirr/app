@@ -50,14 +50,6 @@ func (w *Window) WhenWindow(f func(w app.Window)) {
 	f(w)
 }
 
-// WhenPage satisfies the app.Window interface.
-func (w *Window) WhenPage(func(app.Page)) {}
-
-// WhenWebView satisfies the app.Window interface.
-func (w *Window) WhenWebView(f func(w app.WebView)) {
-	f(w)
-}
-
 // WhenMenu satisfies the app.Window interface.
 func (w *Window) WhenMenu(func(app.Menu)) {}
 
@@ -109,12 +101,6 @@ func (w *Window) Create(c app.WindowConfig) {
 		w.err = err
 		return
 	}
-
-	w.Driver.Elems().Put(w)
-
-	if len(c.URL) != 0 {
-		w.Load(c.URL)
-	}
 }
 
 // Load satisfies the app.Window interface.
@@ -123,12 +109,12 @@ func (w *Window) Load(urlFmt string, v ...interface{}) {
 	n := CompoNameFromURLString(u)
 
 	// Redirect web page to default web browser.
-	if !w.Driver.Compos().IsCompoRegistered(n) {
+	if !w.Driver.Factory().IsCompoRegistered(n) {
 		w.err = w.OpenDefaultBrowser(u)
 		return
 	}
 
-	if w.compo, w.err = w.Driver.Compos().NewCompo(n); w.err != nil {
+	if w.compo, w.err = w.Driver.Factory().NewCompo(n); w.err != nil {
 		return
 	}
 
@@ -184,36 +170,6 @@ func (w *Window) Load(urlFmt string, v ...interface{}) {
 	}
 }
 
-// Compo satisfies the app.Window interface.
-func (w *Window) Compo() app.Compo {
-	return w.compo
-}
-
-// Contains satisfies the app.Window interface.
-func (w *Window) Contains(c app.Compo) bool {
-	return w.Dom.Contains(c)
-}
-
-// Render satisfies the app.Window interface.
-func (w *Window) Render(c app.Compo) {
-	w.err = w.Dom.Render(c)
-}
-
-func (w *Window) render(changes interface{}) error {
-	b, err := json.Marshal(changes)
-	if err != nil {
-		return errors.Wrap(err, "encoding changes failed")
-	}
-
-	return w.Driver.Call("windows.Render", nil, struct {
-		ID      string
-		Changes string
-	}{
-		ID:      w.id,
-		Changes: string(b),
-	})
-}
-
 // Reload satisfies the app.Window interface.
 func (w *Window) Reload() {
 	u := w.history.Current()
@@ -258,6 +214,36 @@ func (w *Window) Next() {
 	}
 
 	w.Load(u)
+}
+
+// Render satisfies the app.Window interface.
+func (w *Window) Render(c app.Compo) {
+	w.err = w.Dom.Render(c)
+}
+
+// Compo satisfies the app.Window interface.
+func (w *Window) Compo() app.Compo {
+	return w.compo
+}
+
+// Contains satisfies the app.Window interface.
+func (w *Window) Contains(c app.Compo) bool {
+	return w.Dom.Contains(c)
+}
+
+func (w *Window) render(changes interface{}) error {
+	b, err := json.Marshal(changes)
+	if err != nil {
+		return errors.Wrap(err, "encoding changes failed")
+	}
+
+	return w.Driver.Call("windows.Render", nil, struct {
+		ID      string
+		Changes string
+	}{
+		ID:      w.id,
+		Changes: string(b),
+	})
 }
 
 // EvalJS satisfies the app.Window interface.

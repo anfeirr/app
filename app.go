@@ -29,7 +29,6 @@ var (
 
 	driver    Driver
 	target    = "web"
-	addons    = []Addon{Logs()}
 	ui        = make(chan func(), 4096)
 	factory   = NewFactory()
 	events    = NewEventRegistry(ui)
@@ -80,15 +79,8 @@ func Import(c ...Compo) {
 	}
 }
 
-// Addons set up the given addons.
-func Addons(a ...Addon) {
-	for _, add := range a {
-		addons = append(addons, add)
-	}
-}
-
 // Run runs the app with the given driver as backend.
-func Run(drivers ...Driver) error {
+func Run(drivers ...Driver) {
 	for _, d := range drivers {
 		if d.Target() == target {
 			driver = d
@@ -97,16 +89,12 @@ func Run(drivers ...Driver) error {
 	}
 
 	if driver == nil {
-		return errors.Errorf("no driver set for %s", target)
+		panic(errors.Errorf("no driver set for %s", target))
 	}
 
-	Logf("%T", driver)
+	driver = DriverWithLogs(driver)
 
-	for _, a := range addons {
-		driver = a(driver)
-	}
-
-	return driver.Run(DriverConfig{
+	driver.Run(DriverConfig{
 		UI:      ui,
 		Factory: factory,
 		Events:  events,
@@ -152,74 +140,18 @@ func Render(c Compo) {
 	})
 }
 
+// New creates and displays the element described by the given configuration.
+//
+// It panics if called before Run.
+func New(c ElemConfig) Elem {
+	return driver.New(c)
+}
+
 // ElemByCompo returns the element where the given component is mounted.
 //
 // It panics if called before Run.
 func ElemByCompo(c Compo) Elem {
 	return driver.ElemByCompo(c)
-}
-
-// NewWindow creates and displays the window described by the given
-// configuration.
-//
-// It panics if called before Run.
-func NewWindow(c WindowConfig) Window {
-	return driver.NewWindow(c)
-}
-
-// NewPage creates the page described by the given configuration.
-//
-// It panics if called before Run.
-func NewPage(c PageConfig) Page {
-	return driver.NewPage(c)
-}
-
-// NewContextMenu creates and displays the context menu with the given component
-// URL.
-//
-// It panics if called before Run.
-func NewContextMenu(url string) Menu {
-	return driver.NewContextMenu(MenuConfig{
-		URL: url,
-	})
-}
-
-// NewController creates the controller described by the given configuration.
-//
-// It panics if called before Run.
-func NewController(c ControllerConfig) Controller {
-	return driver.NewController(c)
-}
-
-// NewFilePanel creates and displays the file panel described by the given
-// configuration.
-//
-// It panics if called before Run.
-func NewFilePanel(c FilePanelConfig) Elem {
-	return driver.NewFilePanel(c)
-}
-
-// NewSaveFilePanel creates and displays the save file panel described by the
-// given configuration.
-//
-// It panics if called before Run.
-func NewSaveFilePanel(c SaveFilePanelConfig) Elem {
-	return driver.NewSaveFilePanel(c)
-}
-
-// NewShare creates and display the share pannel to share the given value.
-//
-// It panics if called before Run.
-func NewShare(v interface{}) Elem {
-	return driver.NewShare(v)
-}
-
-// NewNotification creates and displays the notification described in the
-// given configuration.
-//
-// It panics if called before Run.
-func NewNotification(c NotificationConfig) Elem {
-	return driver.NewNotification(c)
 }
 
 // MenuBar returns the menu bar.
@@ -229,14 +161,6 @@ func MenuBar() Menu {
 	return driver.MenuBar()
 }
 
-// NewStatusMenu creates and displays the status menu described in the given
-// configuration.
-//
-// It panics if called before Run.
-func NewStatusMenu(c StatusMenuConfig) StatusMenu {
-	return driver.NewStatusMenu(c)
-}
-
 // Dock returns the dock tile.
 //
 // It panics if called before Run.
@@ -244,12 +168,11 @@ func Dock() DockTile {
 	return driver.DockTile()
 }
 
-// Stop stops the app.
-// Calling stop make Run return an error.
+// Close stops the app. It makes Run() to return an error.
 //
 // It panics if called before Run.
-func Stop() {
-	driver.Stop()
+func Close() {
+	driver.Close()
 }
 
 // UI calls a function on the UI goroutine.

@@ -2,87 +2,50 @@ package app
 
 // Driver is the interface that describes a backend for app rendering.
 type Driver interface {
-	// The operating system the driver is for.
+	// Returns the targetted operating system name.
 	Target() string
 
-	// The component factory used to create components.
-	Compos() *Factory
-
-	// The store that contains the app elements.
-	Elems() ElemStore
-
-	// Call calls the platform method with the given input and stores the result
-	// into the given ouput. Result is ignored if the output is nil.
+	// Calls the platform method with the given input and stores the result into
+	// the given ouput. Result is ignored if the output is nil.
 	//
 	// It panics if the given output is not a pointer.
 	Call(method string, out interface{}, in interface{}) error
 
-	// Run runs the application with the components registered in the given
-	// factory.
-	Run(DriverConfig) error
+	// Runs the application with the components registered in the given factory.
+	Run(DriverConfig)
 
-	// AppName returns the appliction name.
+	// Returns the component factory used to create components.
+	Factory() *Factory
+
+	// Returns the appliction name.
 	AppName() string
 
-	// Resources returns the given path prefixed by the resources directory
-	// location.
+	// Returns the given path prefixed by the resources directory location.
 	Resources(path ...string) string
 
-	// Storage returns the given path prefixed by the storage directory
-	// location.
+	// Returns the given path prefixed by the storage directory location.
 	Storage(path ...string) string
 
-	// Render renders the given component.
+	// Renders the given component.
 	Render(Compo)
 
-	// ElemByCompo returns the element where the given component is mounted.
+	// Creates and displays the element described in the given configuration.
+	New(ElemConfig) Elem
+
+	// Returns the element where the given component is mounted.
 	ElemByCompo(Compo) Elem
 
-	// NewWindow creates and displays the window described by the given
-	// configuration.
-	NewWindow(WindowConfig) Window
-
-	// NewPage creates the webpage described in the given configuration.
-	NewPage(PageConfig) Page
-
-	// NewContextMenu creates and displays the context menu described by the
-	// given configuration.
-	NewContextMenu(MenuConfig) Menu
-
-	// NewController creates the controller described by the given
-	// configuration.
-	NewController(ControllerConfig) Controller
-
-	// NewFilePanel creates and displays the file panel described by the given
-	// configuration.
-	NewFilePanel(FilePanelConfig) Elem
-
-	// NewSaveFilePanel creates and displays the save file panel described in
-	// the given configuration.
-	NewSaveFilePanel(SaveFilePanelConfig) Elem
-
-	// NewShare creates and display the share pannel to share the given value.
-	NewShare(interface{}) Elem
-
-	// NewNotification creates and displays the notification described in the
-	// given configuration.
-	NewNotification(NotificationConfig) Elem
-
-	// MenuBar returns the menu bar.
+	// Returns the current menu bar element.
 	MenuBar() Menu
 
-	// NewStatusMenu creates a status menu.
-	NewStatusMenu(StatusMenuConfig) StatusMenu
-
-	// Dock returns the dock tile.
+	// Returns the dock tile element.
 	DockTile() DockTile
 
 	// UI calls a function on the UI goroutine.
 	UI(func())
 
-	// Stop stops the driver.
-	// Calling it make run return with an error.
-	Stop()
+	// Close stops the driver. It makes Run() to return an error.
+	Close()
 }
 
 // DriverConfig contains driver configuration.
@@ -96,6 +59,3 @@ type DriverConfig struct {
 	// The event registery to emit events.
 	Events *EventRegistry
 }
-
-// Addon represents a driver addon.
-type Addon func(Driver) Driver

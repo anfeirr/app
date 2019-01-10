@@ -6,7 +6,7 @@ import (
 	"github.com/murlokswarm/app"
 )
 
-// Elem is a base struct to embed in app.Elem implementations.
+// Elem is a struct that implements the app.Elem interface.
 type Elem struct {
 	err error
 }
@@ -24,12 +24,6 @@ func (e *Elem) Contains(app.Compo) bool {
 // WhenWindow satisfies the app.Elem interface.
 func (e *Elem) WhenWindow(func(app.Window)) {}
 
-// WhenPage satisfies the app.Elem interface.
-func (e *Elem) WhenPage(func(app.Page)) {}
-
-// WhenWebView satisfies the app.Elem interface.
-func (e *Elem) WhenWebView(func(app.WebView)) {}
-
 // WhenMenu satisfies the app.Elem interface.
 func (e *Elem) WhenMenu(func(app.Menu)) {}
 
@@ -38,13 +32,6 @@ func (e *Elem) WhenDockTile(func(app.DockTile)) {}
 
 // WhenStatusMenu satisfies the app.Elem interface.
 func (e *Elem) WhenStatusMenu(func(app.StatusMenu)) {}
-
-// WhenErr satisfies the app.Elem interface.
-func (e *Elem) WhenErr(f func(error)) {
-	if e.err != nil {
-		f(e.err)
-	}
-}
 
 // Err satisfies the app.Elem interface.
 func (e *Elem) Err() error {

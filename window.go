@@ -2,8 +2,15 @@ package app
 
 // Window is the interface that describes a window.
 type Window interface {
-	WebView
+	View
 	Closer
+
+	// Evaluates a javascript expression formatted with the given values and
+	// stores the result in the given value.
+	//
+	// It returns an error when result is not a pointer or when a given argument
+	// can't be converted to json.
+	EvalJS(result interface{}, eval string, args ...interface{}) error
 
 	// Position returns the window position.
 	Position() (x, y float64)
@@ -46,7 +53,8 @@ type Window interface {
 	IsMinimized() bool
 }
 
-// WindowConfig is a struct that describes a window.
+// WindowConfig is a struct that describes a window. It implements the
+// app.ElemConfig interface.
 type WindowConfig struct {
 	// The URL of the component to load when the window is created.
 	URL string `json:",omitempty"`
@@ -92,6 +100,11 @@ type WindowConfig struct {
 
 	// Reports whether the minimize button is hidden.
 	MinimizeHidden bool `json:",omitempty"`
+}
+
+// Dump satisfies the app.ElemConfig interface.
+func (c WindowConfig) Dump() string {
+	return Pretty(c)
 }
 
 // Constants that enumerates window events.
