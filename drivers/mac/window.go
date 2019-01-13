@@ -59,13 +59,12 @@ func normalizeWidowSize(min, max float64) (float64, float64) {
 	min = math.Max(0, min)
 	min = math.Min(min, 10000)
 
-	max = math.Min()
 	if max == 0 {
 		max = 10000
 	}
-
 	max = math.Max(0, max)
 	max = math.Min(max, 10000)
+
 	min = math.Min(min, max)
 	return min, max
 }
@@ -95,7 +94,7 @@ func onWindowCallback(w *core.Window, in map[string]interface{}) {
 		)
 	}
 
-	c, err := w.dom.CompoByID(m.CompoID)
+	c, err := w.Dom.CompoByID(m.CompoID)
 	if err != nil {
 		app.Logf("window callback failed: %s", err)
 		return
@@ -136,38 +135,38 @@ func onWindowResize(w *core.Window, in map[string]interface{}) {
 }
 
 func onWindowFocus(w *core.Window, in map[string]interface{}) {
-	w.isFocus = true
+	w.SetIsFocus(true)
 	driver.events.Emit(app.WindowFocused, w)
 }
 
 func onWindowBlur(w *core.Window, in map[string]interface{}) {
-	w.isFocus = false
+	w.SetIsFocus(false)
 	driver.events.Emit(app.WindowBlurred, w)
 }
 
 func onWindowFullScreen(w *core.Window, in map[string]interface{}) {
-	w.isFullscreen = true
+	w.SetIsFullScreen(true)
 	driver.events.Emit(app.WindowEnteredFullScreen, w)
 }
 
 func onWindowExitFullScreen(w *core.Window, in map[string]interface{}) {
-	w.isFullscreen = false
+	w.SetIsFullScreen(false)
 	driver.events.Emit(app.WindowExitedFullScreen, w)
 }
 
 func onWindowMinimize(w *core.Window, in map[string]interface{}) {
-	w.isMinimized = true
+	w.SetIsMinimized(true)
 	driver.events.Emit(app.WindowMinimized, w)
 }
 
 func onWindowDeminimize(w *core.Window, in map[string]interface{}) {
-	w.isMinimized = false
+	w.SetIsMinimized(false)
 	driver.events.Emit(app.WindowDeminimized, w)
 }
 
 func onWindowClose(w *core.Window, in map[string]interface{}) {
 	driver.events.Emit(app.WindowClosed, w)
-	w.dom.Close()
+	w.Dom.Close()
 	driver.elems.Delete(w)
 }
 

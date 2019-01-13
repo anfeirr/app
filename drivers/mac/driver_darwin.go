@@ -49,9 +49,9 @@ func (d *Driver) Call(method string, out interface{}, in interface{}) error {
 }
 
 // Run satisfies the app.Driver interface.
-func (d *Driver) Run(c app.DriverConfig) error {
+func (d *Driver) Run(c app.DriverConfig) {
 	if len(goappBuild) != 0 {
-		return d.runGoappBuild()
+		d.runGoappBuild()
 	}
 
 	d.ui = c.UI
@@ -117,17 +117,21 @@ func (d *Driver) Run(c app.DriverConfig) error {
 		}
 	}()
 
-	err := d.platform.Call("driver.Run", nil, nil)
-	return err
+	if err := d.platform.Call("driver.Run", nil, nil); err != nil {
+		app.Log(err)
+	}
 }
 
-func (d *Driver) runGoappBuild() error {
+func (d *Driver) runGoappBuild() {
 	b, err := json.MarshalIndent(d, "", "    ")
 	if err != nil {
-		return err
+		app.Log(err)
+		return
 	}
 
-	return ioutil.WriteFile(goappBuild, b, 0777)
+	if err = ioutil.WriteFile(goappBuild, b, 0777); err != nil {
+		app.Log(err)
+	}
 }
 
 func (d *Driver) configureDefaultWindow() {
@@ -143,6 +147,11 @@ func (d *Driver) configureDefaultWindow() {
 	if len(d.DefaultWindow.URL) == 0 {
 		d.DefaultWindow.URL = d.URL
 	}
+}
+
+// Factory satisfies the app.Driver interface.
+func (d *Driver) Factory() *app.Factory {
+	return d.factory
 }
 
 // AppName satisfies the app.Driver interface.
@@ -187,6 +196,22 @@ func (d *Driver) Storage(path ...string) string {
 	return filepath.Join(d.support(), "storage", s)
 }
 
+// New satisfies the app.Driver interface.
+func (d *Driver) New(c app.ElemConfig) app.Elem {
+	switch c := c.(type) {
+	case app.WindowConfig:
+		return newWindow(c)
+
+	default:
+		return core.NotSupportedElem()
+	}
+}
+
+// ElemByCompo satisfies the app.Driver interface.
+func (d *Driver) ElemByCompo(c app.Compo) app.Elem {
+	return d.elems.GetByCompo(c)
+}
+
 // Render satisfies the app.Driver interface.
 func (d *Driver) Render(c app.Compo) {
 	e := d.ElemByCompo(c)
@@ -195,64 +220,12 @@ func (d *Driver) Render(c app.Compo) {
 		return
 	}
 
-	e.(app.ElemWithCompo).Render(c)
-}
-
-// ElemByCompo satisfies the app.Driver interface.
-func (d *Driver) ElemByCompo(c app.Compo) app.Elem {
-	return d.elems.GetByCompo(c)
-}
-
-// NewWindow satisfies the app.Driver interface.
-func (d *Driver) NewWindow(c app.WindowConfig) app.Window {
-	return newWindow(c)
-}
-
-// NewContextMenu satisfies the app.Driver interface.
-func (d *Driver) NewContextMenu(c app.MenuConfig) app.Menu {
-	m := newMenu(c, "context menu")
-	if m.Err() != nil {
-		return m
-	}
-
-	err := d.platform.Call("driver.SetContextMenu", nil, m.ID())
-	m.SetErr(err)
-	return m
-}
-
-// NewController statisfies the app.Driver interface.
-func (d *Driver) NewController(c app.ControllerConfig) app.Controller {
-	return newController(c)
-}
-
-// NewFilePanel satisfies the app.Driver interface.
-func (d *Driver) NewFilePanel(c app.FilePanelConfig) app.Elem {
-	return newFilePanel(c)
-}
-
-// NewSaveFilePanel satisfies the app.Driver interface.
-func (d *Driver) NewSaveFilePanel(c app.SaveFilePanelConfig) app.Elem {
-	return newSaveFilePanel(c)
-}
-
-// NewShare satisfies the app.Driver interface.
-func (d *Driver) NewShare(v interface{}) app.Elem {
-	return newSharePanel(v)
-}
-
-// NewNotification satisfies the app.Driver interface.
-func (d *Driver) NewNotification(c app.NotificationConfig) app.Elem {
-	return newNotification(c)
+	e.(app.View).Render(c)
 }
 
 // MenuBar satisfies the app.Driver interface.
 func (d *Driver) MenuBar() app.Menu {
 	return d.menubar
-}
-
-// NewStatusMenu satisfies the app.Driver interface.
-func (d *Driver) NewStatusMenu(c app.StatusMenuConfig) app.StatusMenu {
-	return newStatusMenu(c)
 }
 
 // DockTile satisfies the app.Driver interface.
@@ -265,8 +238,8 @@ func (d *Driver) UI(f func()) {
 	d.ui <- f
 }
 
-// Stop satisfies the app.Driver interface.
-func (d *Driver) Stop() {
+// Close satisfies the app.Driver interface.
+func (d *Driver) Close() {
 	if err := d.platform.Call("driver.Close", nil, nil); err != nil {
 		app.Log("stop failed:", err)
 		d.stop()
@@ -298,11 +271,11 @@ func (d *Driver) support() string {
 
 func (d *Driver) onRun(in map[string]interface{}) {
 	d.configureDefaultWindow()
-	d.menubar = newMenuBar(d.MenubarConfig)
-	d.docktile = newDockTile(app.MenuConfig{URL: d.DockURL})
+	// d.menubar = newMenuBar(d.MenubarConfig)
+	// d.docktile = newDockTile(app.MenuConfig{URL: d.DockURL})
 
 	if len(d.URL) != 0 {
-		app.NewWindow(d.DefaultWindow)
+		app.New(d.DefaultWindow)
 	}
 
 	d.events.Emit(app.Running)
@@ -320,7 +293,7 @@ func (d *Driver) onReopen(in map[string]interface{}) {
 	hasVisibleWindow := in["HasVisibleWindows"].(bool)
 
 	if !hasVisibleWindow && len(d.URL) != 0 {
-		app.NewWindow(d.DefaultWindow)
+		app.New(d.DefaultWindow)
 	}
 
 	d.events.Emit(app.Reopened, hasVisibleWindow)

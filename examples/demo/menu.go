@@ -20,17 +20,17 @@ type Menu struct {
 
 // OnMount is the func called when the component is mounted.
 func (m *Menu) OnMount() {
-	m.SupportsMenuBar = app.MenuBar().Err() != app.ErrNotSupported
-	m.SupportsDock = app.Dock().Err() != app.ErrNotSupported
+	// m.SupportsMenuBar = app.MenuBar().Err() != app.ErrNotSupported
+	// m.SupportsDock = app.Dock().Err() != app.ErrNotSupported
 
-	m.statusMenu = app.NewStatusMenu(app.StatusMenuConfig{
-		Icon: app.Resources("logo.png"),
-		URL:  "testmenu",
-	})
-	m.StatusIcon = true
-	m.SupportsStatusMenu = m.statusMenu.Err() != app.ErrNotSupported
+	// m.statusMenu = app.New(app.StatusMenuConfig{
+	// 	Icon: app.Resources("logo.png"),
+	// 	URL:  "testmenu",
+	// })
+	// m.StatusIcon = true
+	// m.SupportsStatusMenu = m.statusMenu.Err() != app.ErrNotSupported
 
-	app.Render(m)
+	// app.Render(m)
 }
 
 // OnDismount is the func called when the component is dismounted.
@@ -122,7 +122,7 @@ func (m *Menu) Render() string {
 
 // OnContextMenu is the function called to display a context menu.
 func (m *Menu) OnContextMenu() {
-	app.NewContextMenu("contextmenu")
+	// app.NewContextMenu("contextmenu")
 }
 
 // ToggleDockBadge is the function called the show/hide the dock badge.

@@ -26,14 +26,14 @@ type Driver interface {
 	// Returns the given path prefixed by the storage directory location.
 	Storage(path ...string) string
 
-	// Renders the given component.
-	Render(Compo)
-
 	// Creates and displays the element described in the given configuration.
 	New(ElemConfig) Elem
 
 	// Returns the element where the given component is mounted.
 	ElemByCompo(Compo) Elem
+
+	// Renders the given component.
+	Render(Compo)
 
 	// Returns the current menu bar element.
 	MenuBar() Menu

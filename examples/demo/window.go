@@ -5,7 +5,7 @@ import (
 )
 
 func newWindow(title, url string, frosted bool) {
-	app.NewWindow(app.WindowConfig{
+	app.New(app.WindowConfig{
 		Title:             title,
 		URL:               url,
 		Width:             1440,

@@ -6,6 +6,11 @@ import (
 	"github.com/murlokswarm/app"
 )
 
+// NotSupportedElem returns a not supported elements.
+func NotSupportedElem() app.Elem {
+	return &Elem{err: app.ErrNotSupported}
+}
+
 // Elem is a struct that implements the app.Elem interface.
 type Elem struct {
 	err error
